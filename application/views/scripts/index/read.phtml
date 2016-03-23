@@ -1,0 +1,21 @@
+<? foreach($this->comments as $comment) { ?>
+	<div id="div<?=$comment['id'];?>">
+		<? if ($comment['id']==$this->edit_id) { ?>
+			<p>Автор:<input id="user<?=$comment['id'];?>" type="edit" value="<?=$comment['name'];?>"></p>
+			<p>Коментарий:<textarea id="comment<?=$comment['id'];?>"><?=$comment['comment'];?></textarea></p>
+			<p>
+				<input type="button" value="Отмена" onclick="edit_id=0;get_comments();">
+				<input type="button" value="Сохранить" onclick="save(<?=$comment['id'];?>)">
+			</p>
+		<? }else{ ?>
+			<p>Автор:<?=$comment['name'];?></p>
+			<p>Коментарий:<?=$comment['comment'];?></p>
+			<? if($this->autUser->isAdmin) { ?>
+				<p>
+					<input type="button" value="Редактировать" onclick="edit_id=<?=$comment['id'];?>">
+					<input type="button" value="Удалить" onclick="del(<?=$comment['id'];?>)">
+				</p>
+			<? } ?>
+		<? } ?>
+	</div>
+<? } ?>

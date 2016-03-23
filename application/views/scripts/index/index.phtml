@@ -1,0 +1,88 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+<div>На российских прилавках появились овощи и фрукты из Сирии. Они должны частично заместить турецкие продукты, ввоз которых запрещён с этого года. По данным «Коммерсанта», импортёры уже ведут переговоры с ретейлерами.</div>
+<script>
+	var edit_id = 0;
+	function get_comments(){
+		$.get('index/read',{edit_id:edit_id}, function(data) {
+			$('#comments').html( data );
+			if (edit_id==0){
+				setTimeout(get_comments,500);
+			}
+		});
+	}
+	function add_comment(){
+		var user = $('#add_form #user').val();
+		var email = $('#add_form #email').val();
+		var comment = $('#add_form #comment').val();
+		
+		reg_email = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		
+		if (user.length==0){
+			alert('Укажите имя');
+		}else if (user.match(/^[\u0410-\u044f]+$/)==null){
+			alert('Имя должно содержать только русские символы');
+		<? if (!$this->autUser->isAdmin){?>
+		}else if (user=='Администратор'){
+			alert('Нельзя писать от имени администратора');
+		<? } ?>
+		}else if (email.length==0){
+			alert('Укажите Email');
+		}else if (!reg_email.test(email)){
+			alert('Некорректный Email');
+		}else if (comment.length==0){
+			alert('укажите коментарий');
+		}else{
+			$.post('index/add',$('#add_form').serialize(),function(data) {
+				alert('Коментарий добавлен');
+				$('#comment').val('');
+			});
+		}
+	}
+	
+	function del(id){
+		$.get('index/del',{id:id}, function(data) {
+		});
+	}
+	function save(id){
+		var user = $('#user'+id).val();
+		var comment = $('#comment'+id).val();
+		$.get('index/save',{id:id,user:user,comment:comment}, function(data) {
+			edit_id=0;
+			get_comments()
+		});
+	}
+	
+	$(document).ready(function() {
+		get_comments();
+	});
+</script>
+
+<div id="comments">
+
+</div>
+
+<p>Оставить комментарий:</p>
+<form action="javascript:add_comment();" id="add_form">
+	<p>Имя:<input type='text' id="user" name="user" value="<?=($this->autUser->isAdmin?'Администратор':'Гость');?>"></p>
+	<p>email:<input type='text' id ="email" name ="email" value="<?=($this->autUser->isAdmin?'admin@admin.ru':'');?>"></p>
+	<p>Комментарий</p>
+	<textarea id="comment" name="comment"></textarea>
+	<input type="submit" value="Отправить">
+</form>
+
+<? if ($this->autUser->isAdmin){?>
+
+<p>Вы вошли как Администратор <a href="index/logout">Выйти</a></p>
+
+<? }else{ ?>
+
+<p>Авторизация</p>
+<form action="" method="post">
+	<p>Логин:<input type='text' id="login" name="login"></p>
+	<p>Пароль:<input type='password' id ="pass" name ="pass"></p>
+	<input type="submit" value="Войти">
+</form>
+
+<? } ?>
+
